@@ -12,7 +12,7 @@ from .serializers import (
     OrderItemSerializer, BillSerializer, DailyExpenseSerializer, DailyTrackerSerializer
 )
 
-BasePermission = IsAuthenticatedOrReadOnly
+BasePermission = AllowAny
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
