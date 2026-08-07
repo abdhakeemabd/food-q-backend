@@ -1,45 +1,48 @@
 from rest_framework import viewsets
 from rest_framework.decorators import api_view, permission_classes, action
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
-from .models import Table, Category, InventoryItem, Customer, Order, OrderItem, Bill
+from django.conf import settings
+from .models import Table, Category, InventoryItem, Customer, Order, OrderItem, Bill, DailyExpense, DailyTracker
 from .serializers import (
     UserSerializer, TableSerializer, CategorySerializer,
     InventoryItemSerializer, CustomerSerializer, OrderSerializer,
-    OrderItemSerializer, BillSerializer
+    OrderItemSerializer, BillSerializer, DailyExpenseSerializer, DailyTrackerSerializer
 )
+
+BasePermission = IsAuthenticatedOrReadOnly
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BasePermission]
 
 class TableViewSet(viewsets.ModelViewSet):
     queryset = Table.objects.all()
     serializer_class = TableSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BasePermission]
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BasePermission]
 
 class InventoryItemViewSet(viewsets.ModelViewSet):
     queryset = InventoryItem.objects.all()
     serializer_class = InventoryItemSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BasePermission]
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BasePermission]
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BasePermission]
 
     @action(detail=True, methods=['post'])
     def checkout(self, request, pk=None):
@@ -79,14 +82,24 @@ class OrderViewSet(viewsets.ModelViewSet):
 class OrderItemViewSet(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BasePermission]
 
 class BillViewSet(viewsets.ModelViewSet):
     queryset = Bill.objects.all()
     serializer_class = BillSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BasePermission]
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def hello_world(request):
     return Response({"message": "Hello from Django backend!"})
+
+class DailyExpenseViewSet(viewsets.ModelViewSet):
+    queryset = DailyExpense.objects.all()
+    serializer_class = DailyExpenseSerializer
+    permission_classes = [BasePermission]
+
+class DailyTrackerViewSet(viewsets.ModelViewSet):
+    queryset = DailyTracker.objects.all()
+    serializer_class = DailyTrackerSerializer
+    permission_classes = [BasePermission]

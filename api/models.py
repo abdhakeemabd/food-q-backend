@@ -95,3 +95,39 @@ class Bill(models.Model):
 
     def __str__(self):
         return f"Bill for Order #{self.order.id}"
+
+class DailyExpense(models.Model):
+    date = models.DateField(unique=True)
+    rent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    salary = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    kalikattan = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    chicken = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    kuboos = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    gas = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    mandi = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    pepsi = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    purchase = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    bill = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    extra = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def save(self, *args, **kwargs):
+        self.total = sum([
+            self.rent or 0, self.salary or 0, self.kalikattan or 0, self.chicken or 0, 
+            self.kuboos or 0, self.gas or 0, self.mandi or 0, self.pepsi or 0, 
+            self.purchase or 0, self.bill or 0, self.extra or 0
+        ])
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Daily Expense - {self.date}"
+
+class DailyTracker(models.Model):
+    date = models.DateField(unique=True)
+    total_sale = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    swiggy = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    total_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    cash_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
+    def __str__(self):
+        return f"Daily Tracker - {self.date}"

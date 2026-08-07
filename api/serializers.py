@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Table, Category, InventoryItem, Customer, Order, OrderItem, Bill
+from .models import Table, Category, InventoryItem, Customer, Order, OrderItem, Bill, DailyExpense, DailyTracker
 from django.contrib.auth.models import User
 
 class UserSerializer(serializers.ModelSerializer):
@@ -49,4 +49,15 @@ class OrderSerializer(serializers.ModelSerializer):
 class BillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bill
+        fields = '__all__'
+
+class DailyExpenseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DailyExpense
+        fields = '__all__'
+        read_only_fields = ['total']
+
+class DailyTrackerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DailyTracker
         fields = '__all__'

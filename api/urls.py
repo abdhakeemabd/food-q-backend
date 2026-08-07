@@ -15,7 +15,8 @@ router.register(r'customers', views.CustomerViewSet)
 router.register(r'orders', views.OrderViewSet)
 router.register(r'order-items', views.OrderItemViewSet)
 router.register(r'bills', views.BillViewSet)
-
+router.register(r'daily-expenses', views.DailyExpenseViewSet)
+router.register(r'daily-trackers', views.DailyTrackerViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('hello/', views.hello_world, name='hello_world'),
