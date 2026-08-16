@@ -85,6 +85,8 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class BillSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(source='order.items', many=True, read_only=True)
+
     class Meta:
         model = Bill
         fields = '__all__'
