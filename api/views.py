@@ -5,11 +5,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
 from django.conf import settings
-from .models import Table, Category, InventoryItem, Customer, Order, OrderItem, Bill, DailyExpense, DailyTracker
+from .models import Table, Category, InventoryItem, Customer, Order, OrderItem, Bill, DailyExpense, DailyTracker, Expense, Income, Employee, Role, SalaryRecord
 from .serializers import (
     UserSerializer, TableSerializer, CategorySerializer,
     InventoryItemSerializer, CustomerSerializer, OrderSerializer,
-    OrderItemSerializer, BillSerializer, DailyExpenseSerializer, DailyTrackerSerializer
+    OrderItemSerializer, BillSerializer, DailyExpenseSerializer, DailyTrackerSerializer,
+    ExpenseSerializer, IncomeSerializer, EmployeeSerializer, RoleSerializer, SalaryRecordSerializer
 )
 
 BasePermission = AllowAny
@@ -102,4 +103,29 @@ class DailyExpenseViewSet(viewsets.ModelViewSet):
 class DailyTrackerViewSet(viewsets.ModelViewSet):
     queryset = DailyTracker.objects.all()
     serializer_class = DailyTrackerSerializer
+    permission_classes = [BasePermission]
+
+class ExpenseViewSet(viewsets.ModelViewSet):
+    queryset = Expense.objects.all()
+    serializer_class = ExpenseSerializer
+    permission_classes = [BasePermission]
+
+class IncomeViewSet(viewsets.ModelViewSet):
+    queryset = Income.objects.all()
+    serializer_class = IncomeSerializer
+    permission_classes = [BasePermission]
+
+class EmployeeViewSet(viewsets.ModelViewSet):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+    permission_classes = [BasePermission]
+
+class RoleViewSet(viewsets.ModelViewSet):
+    queryset = Role.objects.all()
+    serializer_class = RoleSerializer
+    permission_classes = [BasePermission]
+
+class SalaryRecordViewSet(viewsets.ModelViewSet):
+    queryset = SalaryRecord.objects.all()
+    serializer_class = SalaryRecordSerializer
     permission_classes = [BasePermission]

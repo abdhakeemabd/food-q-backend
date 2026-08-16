@@ -17,6 +17,10 @@ class Table(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=100)
 
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+
     def __str__(self):
         return self.name
 
@@ -109,13 +113,22 @@ class DailyExpense(models.Model):
     purchase = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     bill = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     extra = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    mutton = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    fish = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    vegetable = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    grocery = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    dairy = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    eb_bill = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    other = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def save(self, *args, **kwargs):
         self.total = sum([
             self.rent or 0, self.salary or 0, self.kalikattan or 0, self.chicken or 0, 
             self.kuboos or 0, self.gas or 0, self.mandi or 0, self.pepsi or 0, 
-            self.purchase or 0, self.bill or 0, self.extra or 0
+            self.purchase or 0, self.bill or 0, self.extra or 0,
+            self.mutton or 0, self.fish or 0, self.vegetable or 0, self.grocery or 0,
+            self.dairy or 0, self.eb_bill or 0, self.other or 0
         ])
         super().save(*args, **kwargs)
 
@@ -131,3 +144,56 @@ class DailyTracker(models.Model):
     
     def __str__(self):
         return f"Daily Tracker - {self.date}"
+
+class Expense(models.Model):
+    title = models.CharField(max_length=200)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    category = models.CharField(max_length=100)
+    date = models.DateField()
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} - ₹{self.amount}"
+
+class Income(models.Model):
+    title = models.CharField(max_length=200)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    category = models.CharField(max_length=100)
+    date = models.DateField()
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} - ₹{self.amount}"
+
+class Employee(models.Model):
+    name = models.CharField(max_length=200)
+    role = models.CharField(max_length=100, default='Staff')
+    phone = models.CharField(max_length=20, blank=True)
+    salary = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    daily_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    status = models.CharField(max_length=20, default='Active')
+    joined_date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.role})"
+
+class Role(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+class SalaryRecord(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='salary_payouts', null=True, blank=True)
+    employee_name = models.CharField(max_length=200)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_type = models.CharField(max_length=50, default='Monthly')
+    payment_mode = models.CharField(max_length=50, default='Cash')
+    date = models.DateField()
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.employee_name} - ₹{self.amount} ({self.date})"

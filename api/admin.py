@@ -1,5 +1,29 @@
 from django.contrib import admin
-from .models import Table, Category, InventoryItem, Customer, Order, OrderItem, Bill, DailyExpense, DailyTracker
+from .models import Table, Category, InventoryItem, Customer, Order, OrderItem, Bill, DailyExpense, DailyTracker, Expense, Income, Employee, Role, SalaryRecord
+
+@admin.register(Role)
+class RoleAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+
+@admin.register(SalaryRecord)
+class SalaryRecordAdmin(admin.ModelAdmin):
+    list_display = ('employee_name', 'amount', 'payment_type', 'payment_mode', 'date')
+    list_filter = ('payment_type', 'payment_mode', 'date')
+
+@admin.register(Employee)
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'role', 'phone', 'salary', 'status')
+    list_filter = ('role', 'status')
+
+@admin.register(Expense)
+class ExpenseAdmin(admin.ModelAdmin):
+    list_display = ('title', 'amount', 'category', 'date')
+    list_filter = ('category', 'date')
+
+@admin.register(Income)
+class IncomeAdmin(admin.ModelAdmin):
+    list_display = ('title', 'amount', 'category', 'date')
+    list_filter = ('category', 'date')
 
 @admin.register(Table)
 class TableAdmin(admin.ModelAdmin):

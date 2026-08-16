@@ -1,5 +1,30 @@
 from rest_framework import serializers
-from .models import Table, Category, InventoryItem, Customer, Order, OrderItem, Bill, DailyExpense, DailyTracker
+from .models import Table, Category, InventoryItem, Customer, Order, OrderItem, Bill, DailyExpense, DailyTracker, Expense, Income, Employee, Role, SalaryRecord
+
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = '__all__'
+
+class SalaryRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SalaryRecord
+        fields = '__all__'
+
+class EmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = '__all__'
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Expense
+        fields = '__all__'
+
+class IncomeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Income
+        fields = '__all__'
 from django.contrib.auth.models import User
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,7 +42,20 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = '__all__'
 
+class CategoryField(serializers.SlugRelatedField):
+    def to_internal_value(self, data):
+        if not data:
+            return None
+        if isinstance(data, int) or (isinstance(data, str) and str(data).isdigit()):
+            try:
+                return Category.objects.get(pk=int(data))
+            except Category.DoesNotExist:
+                pass
+        category, _ = Category.objects.get_or_create(name=str(data).strip())
+        return category
+
 class InventoryItemSerializer(serializers.ModelSerializer):
+    category = CategoryField(slug_field='name', queryset=Category.objects.all(), required=False, allow_null=True)
     category_name = serializers.ReadOnlyField(source='category.name')
 
     class Meta:
