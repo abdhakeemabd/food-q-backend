@@ -90,6 +90,67 @@ class BillViewSet(viewsets.ModelViewSet):
     serializer_class = BillSerializer
     permission_classes = [BasePermission]
 
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        
+        # Normalize payment_method (e.g. 'Cash' -> 'cash', 'UPI' -> 'upi', 'Card' -> 'card')
+        pm = str(data.get('payment_method') or data.get('paymentMethod') or 'cash').lower()
+        if pm not in ['cash', 'card', 'upi']:
+            pm = 'cash'
+        data['payment_method'] = pm
+
+        # Map totalAmount / amount_paid
+        amount = data.get('amount_paid') or data.get('totalAmount') or data.get('total') or 0
+        data['amount_paid'] = amount
+
+        # Handle order association
+        order_id = data.get('order') or data.get('order_id')
+        
+        if not order_id:
+            # If converting KOT/Cart to Bill directly without existing DRF order ID
+            table_id = data.get('tableId') or data.get('table_id') or data.get('table')
+            table = None
+            if table_id:
+                try:
+                    table = Table.objects.get(pk=int(table_id))
+                    table.status = 'available'
+                    table.save()
+                except (Table.DoesNotExist, ValueError, TypeError):
+                    table = None
+                    
+            order = Order.objects.create(
+                table=table,
+                total_amount=amount,
+                status='completed'
+            )
+            
+            # Create OrderItems if items array passed
+            items = data.get('items', [])
+            if isinstance(items, list):
+                for item_data in items:
+                    item_id = item_data.get('id') or item_data.get('item_id')
+                    qty = item_data.get('qty') or item_data.get('quantity') or 1
+                    price = item_data.get('price') or 0
+                    if item_id:
+                        try:
+                            inv_item = InventoryItem.objects.get(pk=int(item_id))
+                            OrderItem.objects.create(
+                                order=order,
+                                item=inv_item,
+                                quantity=qty,
+                                price=price
+                            )
+                        except (InventoryItem.DoesNotExist, ValueError, TypeError):
+                            pass
+
+            data['order'] = order.id
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def hello_world(request):
