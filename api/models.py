@@ -31,6 +31,7 @@ class InventoryItem(models.Model):
     stock = models.IntegerField(default=0)
     is_available = models.BooleanField(default=True)
     img = models.TextField(blank=True, null=True)
+    display_order = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
