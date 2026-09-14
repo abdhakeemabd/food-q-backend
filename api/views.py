@@ -33,7 +33,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 from django.db.models.deletion import ProtectedError
 
 class InventoryItemViewSet(viewsets.ModelViewSet):
-    queryset = InventoryItem.objects.all()
+    queryset = InventoryItem.objects.all().order_by('display_order', 'id')
     serializer_class = InventoryItemSerializer
     permission_classes = [BasePermission]
 
