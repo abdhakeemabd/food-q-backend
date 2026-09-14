@@ -30,10 +30,21 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [BasePermission]
 
+from django.db.models.deletion import ProtectedError
+
 class InventoryItemViewSet(viewsets.ModelViewSet):
     queryset = InventoryItem.objects.all()
     serializer_class = InventoryItemSerializer
     permission_classes = [BasePermission]
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except ProtectedError:
+            return Response(
+                {"error": "Cannot delete this item because it is referenced in past order history."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
